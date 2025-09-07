@@ -23,114 +23,141 @@ struct MonkeyJumpGame: View {
     @State private var showGameOver = false
     @State private var earnedCoins = 0
     @State private var scrollOffset: CGFloat = 0
+    @State private var gameAreaSize: CGSize = .zero
     
     let gravity: CGFloat = 0.8
     let jumpPower: CGFloat = -15
-    let groundLevel: CGFloat = 400
+    let monkeySize: CGFloat = 40  // Размер обезьяны
+    var groundLevel: CGFloat {
+        gameAreaSize.height > 0 ? gameAreaSize.height * 0.7 : 280
+    }
+    var monkeyGroundY: CGFloat {
+        groundLevel - monkeySize / 2  // Обезьяна стоит НА земле
+    }
     
     var body: some View {
         ZStack {
             BananaManiaColors.jungleGradient
                 .ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                // Header
-                HStack {
-                    Button("← Back") {
-                        endGame()
-                        onBack()
-                    }
-                    .buttonStyle(JungleButtonStyle())
-                    
-                    Spacer()
-                    
-                    VStack {
-                        Text("🐵 Monkey Jump 🐵")
-                            .font(.title2.bold())
-                            .foregroundColor(BananaManiaColors.bananaYellow)
-                        Text("Level \(level)")
-                            .font(.subheadline)
-                            .foregroundColor(BananaManiaColors.secondaryText)
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing) {
-                        Text("Score: \(score)")
-                            .font(.headline.bold())
-                            .foregroundColor(BananaManiaColors.goldenYellow)
-                    }
-                }
-                .padding(.horizontal, 20)
-                
-                // Game area
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(BananaManiaColors.darkEmerald)
-                        .frame(height: 500)
-                    
-                    // Scrolling background effect
-                    HStack(spacing: 20) {
-                        ForEach(0..<10, id: \.self) { _ in
-                            Text("🌳")
-                                .font(.title)
-                                .opacity(0.3)
-                        }
-                    }
-                    .offset(x: scrollOffset)
-                    
-                    // Collectibles
-                    ForEach(collectibles) { item in
-                        Text(item.type == .banana ? "🍌" : "🪙")
-                            .font(.title2)
-                            .position(x: item.position.x, y: item.position.y)
-                    }
-                    
-                    // Obstacles
-                    ForEach(obstacles) { obstacle in
-                        Text("🪨")
-                            .font(.title)
-                            .position(x: obstacle.position.x, y: obstacle.position.y)
-                    }
-                    
-                    // Monkey
-                    Text(isJumping ? "🙈" : "🐵")
-                        .font(.system(size: 40))
-                        .position(x: monkeyPosition.x, y: monkeyPosition.y)
-                    
-                    // Ground line
-                    Rectangle()
-                        .fill(BananaManiaColors.woodenBrown)
-                        .frame(height: 5)
-                        .position(x: 200, y: groundLevel + 10)
-                }
-                .padding(.horizontal, 20)
-                .onTapGesture {
-                    if gameActive && monkeyPosition.y >= groundLevel - 5 {
-                        jump()
-                    }
-                }
-                
-                // Game controls
-                if !gameActive {
-                    VStack(spacing: 15) {
-                        Text("Tap to make the monkey jump!\nCollect bananas and coins, avoid rocks!")
-                            .font(.subheadline)
-                            .foregroundColor(BananaManiaColors.secondaryText)
-                            .multilineTextAlignment(.center)
-                        
-                        Button(score == 0 ? "Start Jumping!" : "Jump Again!") {
-                            startGame()
+            GeometryReader { geometry in
+                VStack(spacing: min(geometry.size.height * 0.02, 20)) {
+                    // Header
+                    HStack {
+                        Button("← Back") {
+                            endGame()
+                            onBack()
                         }
                         .buttonStyle(JungleButtonStyle())
+                        
+                        Spacer()
+                        
+                        VStack {
+                            Text("🐵 Monkey Jump 🐵")
+                                .font(.system(size: min(geometry.size.width * 0.06, 24), weight: .bold))
+                                .foregroundColor(BananaManiaColors.bananaYellow)
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
+                            Text("Level \(level)")
+                                .font(.system(size: min(geometry.size.width * 0.035, 16)))
+                                .foregroundColor(BananaManiaColors.secondaryText)
+                                .minimumScaleFactor(0.7)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing) {
+                            Text("Score: \(score)")
+                                .font(.system(size: min(geometry.size.width * 0.04, 18), weight: .bold))
+                                .foregroundColor(BananaManiaColors.goldenYellow)
+                                .minimumScaleFactor(0.7)
+                        }
                     }
-                } else {
-                    Text("Tap screen to jump!")
-                        .font(.headline)
-                        .foregroundColor(BananaManiaColors.secondaryText)
-                }
+                    .padding(.horizontal, geometry.size.width * 0.05)
                 
-                Spacer()
+                    // Game area
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(BananaManiaColors.darkEmerald)
+                            .frame(height: geometry.size.height * 0.6)
+                            .background(
+                                GeometryReader { gameGeo in
+                                    Color.clear
+                                        .onAppear {
+                                            gameAreaSize = gameGeo.size
+                                        }
+                                        .onChange(of: gameGeo.size) { newSize in
+                                            gameAreaSize = newSize
+                                        }
+                                }
+                            )
+                        
+                        // Scrolling background effect
+                        HStack(spacing: geometry.size.width * 0.05) {
+                            ForEach(0..<10, id: \.self) { _ in
+                                Text("🌳")
+                                    .font(.system(size: min(geometry.size.width * 0.08, 32)))
+                                    .opacity(0.3)
+                            }
+                        }
+                        .offset(x: scrollOffset)
+                        
+                        // Collectibles
+                        ForEach(collectibles) { item in
+                            Text(item.type == .banana ? "🍌" : "🪙")
+                                .font(.system(size: min(geometry.size.width * 0.06, 24)))
+                                .position(x: item.position.x, y: item.position.y)
+                        }
+                        
+                        // Obstacles
+                        ForEach(obstacles) { obstacle in
+                            Text("🪨")
+                                .font(.system(size: min(geometry.size.width * 0.08, 32)))
+                                .position(x: obstacle.position.x, y: obstacle.position.y)
+                        }
+                        
+                        // Monkey
+                        Text(isJumping ? "🙈" : "🐵")
+                            .font(.system(size: min(geometry.size.width * 0.1, monkeySize)))
+                            .position(x: monkeyPosition.x, y: monkeyPosition.y)
+                        
+                        // Ground line
+                        Rectangle()
+                            .fill(BananaManiaColors.woodenBrown)
+                            .frame(height: 5)
+                            .position(x: gameAreaSize.width / 2, y: groundLevel + 2.5)
+                    }
+                    .padding(.horizontal, geometry.size.width * 0.05)
+                    .onTapGesture {
+                        if gameActive && monkeyPosition.y >= monkeyGroundY - 5 {
+                            jump()
+                        }
+                    }
+                
+                    // Game controls
+                    if !gameActive {
+                        VStack(spacing: geometry.size.height * 0.02) {
+                            Text("Tap to make the monkey jump!\nCollect bananas and coins, avoid rocks!")
+                                .font(.system(size: min(geometry.size.width * 0.04, 16)))
+                                .foregroundColor(BananaManiaColors.secondaryText)
+                                .multilineTextAlignment(.center)
+                                .minimumScaleFactor(0.7)
+                                .padding(.horizontal, geometry.size.width * 0.1)
+                            
+                            Button(score == 0 ? "Start Jumping!" : "Jump Again!") {
+                                startGame()
+                            }
+                            .buttonStyle(JungleButtonStyle())
+                        }
+                    } else {
+                        Text("Tap screen to jump!")
+                            .font(.system(size: min(geometry.size.width * 0.045, 18), weight: .medium))
+                            .foregroundColor(BananaManiaColors.secondaryText)
+                            .minimumScaleFactor(0.7)
+                    }
+                    
+                    Spacer()
+                }
             }
         }
         .alert("Level Complete! 🎉", isPresented: $showGameOver) {
@@ -150,7 +177,8 @@ struct MonkeyJumpGame: View {
     private func startGame() {
         score = 0
         gameActive = true
-        monkeyPosition = CGPoint(x: 200, y: groundLevel)
+        let gameWidth = gameAreaSize.width > 0 ? gameAreaSize.width : 400
+        monkeyPosition = CGPoint(x: gameWidth * 0.2, y: monkeyGroundY)
         monkeyVelocity = 0
         isJumping = false
         collectibles.removeAll()
@@ -183,15 +211,16 @@ struct MonkeyJumpGame: View {
         monkeyPosition.y += monkeyVelocity
         
         // Keep monkey on ground
-        if monkeyPosition.y >= groundLevel {
-            monkeyPosition.y = groundLevel
+        if monkeyPosition.y >= monkeyGroundY {
+            monkeyPosition.y = monkeyGroundY
             monkeyVelocity = 0
             isJumping = false
         }
         
         // Update scroll effect
+        let gameWidth = gameAreaSize.width > 0 ? gameAreaSize.width : 400
         scrollOffset -= 2
-        if scrollOffset < -400 {
+        if scrollOffset < -gameWidth {
             scrollOffset = 0
         }
         
@@ -233,8 +262,10 @@ struct MonkeyJumpGame: View {
     }
     
     private func spawnCollectibles() {
-        let x = CGFloat.random(in: 450...600)
-        let y = CGFloat.random(in: 200...350)
+        let gameWidth = gameAreaSize.width > 0 ? gameAreaSize.width : 400
+        let gameHeight = gameAreaSize.height > 0 ? gameAreaSize.height : 500
+        let x = CGFloat.random(in: gameWidth * 1.1...(gameWidth * 1.5))
+        let y = CGFloat.random(in: gameHeight * 0.2...(gameHeight * 0.6))
         let type: CollectibleType = Bool.random() ? .banana : .coin
         
         collectibles.append(Collectible(
@@ -245,8 +276,10 @@ struct MonkeyJumpGame: View {
     }
     
     private func spawnObstacles() {
-        let x = CGFloat.random(in: 500...700)
-        let y = groundLevel
+        let gameWidth = gameAreaSize.width > 0 ? gameAreaSize.width : 400
+        let x = CGFloat.random(in: gameWidth * 1.2...(gameWidth * 1.8))
+        let obstacleSize: CGFloat = 32  // Размер препятствия
+        let y = groundLevel - obstacleSize / 2  // Препятствие стоит НА земле
         
         obstacles.append(Obstacle(
             id: UUID(),
@@ -255,6 +288,10 @@ struct MonkeyJumpGame: View {
     }
     
     private func checkCollisions() {
+        let gameWidth = gameAreaSize.width > 0 ? gameAreaSize.width : 400
+        let collectThreshold = gameWidth * 0.08 // 8% of game width
+        let obstacleThreshold = gameWidth * 0.09 // 9% of game width
+        
         // Check collectible collisions
         for collectible in collectibles {
             let distance = sqrt(
@@ -262,7 +299,7 @@ struct MonkeyJumpGame: View {
                 pow(monkeyPosition.y - collectible.position.y, 2)
             )
             
-            if distance < 30 {
+            if distance < collectThreshold {
                 score += collectible.type == .banana ? 20 : 30
                 collectibles.removeAll { $0.id == collectible.id }
             }
@@ -275,7 +312,7 @@ struct MonkeyJumpGame: View {
                 pow(monkeyPosition.y - obstacle.position.y, 2)
             )
             
-            if distance < 35 {
+            if distance < obstacleThreshold {
                 endGame()
                 return
             }

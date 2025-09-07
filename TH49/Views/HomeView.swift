@@ -29,112 +29,113 @@ struct HomeView: View {
                     .animation(.easeInOut(duration: banana.duration), value: banana.xPosition)
             }
             
-            VStack(spacing: 30) {
-                // Header with balance
-                HStack {
-                    VStack(alignment: .leading, spacing: 5) {
-                        HStack {
-                            Text("🪙")
-                            Text("\(gameState.totalCoins)")
-                                .font(.title2.bold())
-                                .foregroundColor(BananaManiaColors.goldenYellow)
+            ScrollView {
+                VStack(spacing: 30) {
+                    // Header with balance
+                    HStack {
+                        VStack(alignment: .leading, spacing: 5) {
+                            HStack {
+                                Text("🪙")
+                                Text("\(gameState.totalCoins)")
+                                    .font(.title2.bold())
+                                    .foregroundColor(BananaManiaColors.goldenYellow)
+                            }
+                            
+                            HStack {
+                                Text("🍌")
+                                Text("\(gameState.totalBananas)")
+                                    .font(.title2.bold())
+                                    .foregroundColor(BananaManiaColors.bananaYellow)
+                            }
                         }
                         
-                        HStack {
-                            Text("🍌")
-                            Text("\(gameState.totalBananas)")
-                                .font(.title2.bold())
-                                .foregroundColor(BananaManiaColors.bananaYellow)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        if gameState.checkDailyBonus() {
-                            bonusAmount = min(gameState.dailyBonusStreak * 10, 100)
-                            showDailyBonus = true
-                        }
-                    }) {
-                        VStack {
-                            Text("🎁")
-                                .font(.title)
-                            Text("Daily")
-                                .font(.caption)
-                                .foregroundColor(BananaManiaColors.secondaryText)
-                        }
-                    }
-                    .buttonStyle(JungleButtonStyle())
-                }
-                .padding(.horizontal, 25)
-                .padding(.top, 20)
-                
-                // Welcome message
-                VStack(spacing: 10) {
-                    Text("🐵 Welcome to Banana Mania! 🐵")
-                        .font(.title.bold())
-                        .foregroundColor(BananaManiaColors.bananaYellow)
-                        .multilineTextAlignment(.center)
-                    
-                    Text("Choose your jungle adventure!")
-                        .font(.title3)
-                        .foregroundColor(BananaManiaColors.secondaryText)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.horizontal, 20)
-                
-                // Main navigation buttons
-                VStack(spacing: 20) {
-                    HStack(spacing: 20) {
-                        NavigationButton(
-                            title: "Mini-Games",
-                            icon: "🎮",
-                            description: "Play & Earn",
-                            action: { gameState.currentScreen = .miniGames }
-                        )
+                        Spacer()
                         
-                        NavigationButton(
-                            title: "My Bank",
-                            icon: "🏦",
-                            description: "Save Coins",
-                            action: { gameState.currentScreen = .coinBank }
-                        )
+                        Button(action: {
+                            if gameState.checkDailyBonus() {
+                                bonusAmount = min(gameState.dailyBonusStreak * 10, 100)
+                                showDailyBonus = true
+                            }
+                        }) {
+                            VStack {
+                                Text("🎁")
+                                    .font(.title)
+                                Text("Daily")
+                                    .font(.caption)
+                                    .foregroundColor(BananaManiaColors.secondaryText)
+                            }
+                        }
+                        .buttonStyle(JungleButtonStyle())
                     }
-                    
-                    HStack(spacing: 20) {
-                        NavigationButton(
-                            title: "Rewards",
-                            icon: "🏆",
-                            description: "Unlock Prizes",
-                            action: { gameState.currentScreen = .rewards }
-                        )
+                    .padding(.horizontal, 25)
+                    .padding(.top, 20)
+                
+                    // Welcome message
+                    VStack(spacing: 10) {
+                        Text("🐵 Welcome to Banana Mania! 🐵")
+                            .font(.title.bold())
+                            .foregroundColor(BananaManiaColors.bananaYellow)
+                            .multilineTextAlignment(.center)
                         
-                        NavigationButton(
-                            title: "Settings",
-                            icon: "⚙️",
-                            description: "Preferences",
-                            action: { gameState.currentScreen = .settings }
-                        )
+                        Text("Choose your jungle adventure!")
+                            .font(.title3)
+                            .foregroundColor(BananaManiaColors.secondaryText)
+                            .multilineTextAlignment(.center)
                     }
-                }
-                .padding(.horizontal, 20)
+                    .padding(.horizontal, 20)
                 
-                Spacer()
+                    // Main navigation buttons
+                    VStack(spacing: 20) {
+                        HStack(spacing: 20) {
+                            NavigationButton(
+                                title: "Mini-Games",
+                                icon: "🎮",
+                                description: "Play & Earn",
+                                action: { gameState.currentScreen = .miniGames }
+                            )
+                            
+                            NavigationButton(
+                                title: "My Bank",
+                                icon: "🏦",
+                                description: "Save Coins",
+                                action: { gameState.currentScreen = .coinBank }
+                            )
+                        }
+                        
+                        HStack(spacing: 20) {
+                            NavigationButton(
+                                title: "Rewards",
+                                icon: "🏆",
+                                description: "Unlock Prizes",
+                                action: { gameState.currentScreen = .rewards }
+                            )
+                            
+                            NavigationButton(
+                                title: "Settings",
+                                icon: "⚙️",
+                                description: "Preferences",
+                                action: { gameState.currentScreen = .settings }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 20)
                 
-                // Fun facts or tips
-                VStack(spacing: 10) {
-                    Text("🌟 Jungle Tip 🌟")
-                        .font(.headline.bold())
-                        .foregroundColor(BananaManiaColors.tropicalGreen)
-                    
-                    Text("Play daily to increase your bonus streak!")
-                        .font(.subheadline)
-                        .foregroundColor(BananaManiaColors.secondaryText)
-                        .multilineTextAlignment(.center)
+                    // Fun facts or tips
+                    VStack(spacing: 10) {
+                        Text("🌟 Jungle Tip 🌟")
+                            .font(.headline.bold())
+                            .foregroundColor(BananaManiaColors.tropicalGreen)
+                        
+                        Text("Play daily to increase your bonus streak!")
+                            .font(.subheadline)
+                            .foregroundColor(BananaManiaColors.secondaryText)
+                            .multilineTextAlignment(.center)
+                    }
+                    .woodenPanel()
+                    .padding(.bottom, 30)
                 }
-                .woodenPanel()
-                .padding(.horizontal, 40)
-                .padding(.bottom, 30)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
             }
         }
         .onAppear {

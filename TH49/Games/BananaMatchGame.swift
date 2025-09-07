@@ -29,82 +29,92 @@ struct BananaMatchGame: View {
             BananaManiaColors.jungleGradient
                 .ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                // Header
-                HStack {
-                    Button("← Back") {
-                        onBack()
+            GeometryReader { geometry in
+                VStack(spacing: min(geometry.size.height * 0.02, 20)) {
+                    // Header
+                    HStack {
+                        Button("← Back") {
+                            onBack()
+                        }
+                        .buttonStyle(JungleButtonStyle())
+                        
+                        Spacer()
+                        
+                        VStack {
+                            Text("🧩 Banana Match 🧩")
+                                .font(.system(size: min(geometry.size.width * 0.06, 24), weight: .bold))
+                                .foregroundColor(BananaManiaColors.bananaYellow)
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing) {
+                            Text("Score: \(score)")
+                                .font(.system(size: min(geometry.size.width * 0.04, 18), weight: .bold))
+                                .foregroundColor(BananaManiaColors.goldenYellow)
+                                .minimumScaleFactor(0.7)
+                            Text("Moves: \(moves)")
+                                .font(.system(size: min(geometry.size.width * 0.035, 16)))
+                                .foregroundColor(moves > 5 ? BananaManiaColors.secondaryText : BananaManiaColors.tropicalRed)
+                                .minimumScaleFactor(0.7)
+                        }
                     }
-                    .buttonStyle(JungleButtonStyle())
-                    
-                    Spacer()
-                    
-                    VStack {
-                        Text("🧩 Banana Match 🧩")
-                            .font(.title2.bold())
-                            .foregroundColor(BananaManiaColors.bananaYellow)
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing) {
-                        Text("Score: \(score)")
-                            .font(.headline.bold())
-                            .foregroundColor(BananaManiaColors.goldenYellow)
-                        Text("Moves: \(moves)")
-                            .font(.subheadline)
-                            .foregroundColor(moves > 5 ? BananaManiaColors.secondaryText : BananaManiaColors.tropicalRed)
-                    }
-                }
-                .padding(.horizontal, 20)
+                    .padding(.horizontal, geometry.size.width * 0.05)
                 
-                // Game grid
-                if gameActive {
-                    VStack(spacing: 4) {
-                        ForEach(0..<gridSize, id: \.self) { row in
-                            HStack(spacing: 4) {
-                                ForEach(0..<gridSize, id: \.self) { col in
-                                    GameTileView(
-                                        tile: grid[row][col],
-                                        isSelected: selectedTile == GridPosition(row: row, col: col),
-                                        isMatching: matchingTiles.contains(GridPosition(row: row, col: col))
-                                    ) {
-                                        handleTileTap(row: row, col: col)
+                    // Game grid
+                    if gameActive {
+                        let tileSize = min((geometry.size.width * 0.8) / CGFloat(gridSize), 50)
+                        let spacing = max(2, tileSize * 0.08)
+                        
+                        VStack(spacing: spacing) {
+                            ForEach(0..<gridSize, id: \.self) { row in
+                                HStack(spacing: spacing) {
+                                    ForEach(0..<gridSize, id: \.self) { col in
+                                        GameTileView(
+                                            tile: grid[row][col],
+                                            isSelected: selectedTile == GridPosition(row: row, col: col),
+                                            isMatching: matchingTiles.contains(GridPosition(row: row, col: col)),
+                                            tileSize: tileSize,
+                                            fontSize: min(tileSize * 0.6, 24)
+                                        ) {
+                                            handleTileTap(row: row, col: col)
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    .padding(20)
-                    .woodenPanel()
-                    .padding(.horizontal, 20)
-                } else {
-                    VStack(spacing: 20) {
-                        Text("🎯 Match 3 or more identical items!")
-                            .font(.title3.bold())
-                            .foregroundColor(BananaManiaColors.bananaYellow)
-                            .multilineTextAlignment(.center)
-                        
-                        VStack(spacing: 10) {
-                            Text("🍌 Bananas = 10 points")
-                            Text("🥥 Coconuts = 15 points")
-                            Text("🍊 Oranges = 20 points")
-                            Text("🍇 Grapes = 25 points")
-                            Text("💎 Gems = 50 points")
+                        .woodenPanel()
+                    } else {
+                        VStack(spacing: geometry.size.height * 0.025) {
+                            Text("🎯 Match 3 or more identical items!")
+                                .font(.system(size: min(geometry.size.width * 0.05, 20), weight: .bold))
+                                .foregroundColor(BananaManiaColors.bananaYellow)
+                                .multilineTextAlignment(.center)
+                                .minimumScaleFactor(0.7)
+                            
+                            VStack(spacing: geometry.size.height * 0.015) {
+                                Text("🍌 Bananas = 10 points")
+                                Text("🥥 Coconuts = 15 points")
+                                Text("🍊 Oranges = 20 points")
+                                Text("🍇 Grapes = 25 points")
+                                Text("💎 Gems = 50 points")
+                            }
+                            .font(.system(size: min(geometry.size.width * 0.04, 16)))
+                            .foregroundColor(BananaManiaColors.secondaryText)
+                            .minimumScaleFactor(0.7)
+                            
+                            Button(score == 0 ? "Start Matching!" : "Play Again!") {
+                                startGame()
+                            }
+                            .buttonStyle(JungleButtonStyle())
                         }
-                        .font(.subheadline)
-                        .foregroundColor(BananaManiaColors.secondaryText)
-                        
-                        Button(score == 0 ? "Start Matching!" : "Play Again!") {
-                            startGame()
-                        }
-                        .buttonStyle(JungleButtonStyle())
+                        .woodenPanel()
                     }
-                    .woodenPanel()
-                    .padding(.horizontal, 30)
+                    
+                    Spacer()
                 }
-                
-                Spacer()
             }
         }
         .alert("Game Over! 🎊", isPresented: $showGameOver) {
@@ -365,19 +375,21 @@ struct GameTileView: View {
     let tile: GameTile
     let isSelected: Bool
     let isMatching: Bool
+    let tileSize: CGFloat
+    let fontSize: CGFloat
     let onTap: () -> Void
     
     var body: some View {
         Button(action: onTap) {
             Text(tile.type)
-                .font(.title2)
-                .frame(width: 50, height: 50)
+                .font(.system(size: fontSize))
+                .frame(width: tileSize, height: tileSize)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: max(4, tileSize * 0.15))
                         .fill(backgroundColor)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(borderColor, lineWidth: isSelected ? 3 : 1)
+                            RoundedRectangle(cornerRadius: max(4, tileSize * 0.15))
+                                .stroke(borderColor, lineWidth: isSelected ? max(2, tileSize * 0.06) : max(1, tileSize * 0.02))
                         )
                 )
                 .scaleEffect(isMatching ? 1.2 : 1.0)

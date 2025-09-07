@@ -63,12 +63,15 @@ struct JungleButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.title2.bold())
+            .font(.headline.bold())
             .foregroundColor(BananaManiaColors.mainText)
-            .padding(.horizontal, 30)
-            .padding(.vertical, 15)
+            .multilineTextAlignment(.center)
+            .lineLimit(nil)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .frame(minHeight: 44)
             .background(
-                RoundedRectangle(cornerRadius: 15)
+                RoundedRectangle(cornerRadius: 12)
                     .fill(configuration.isPressed || isPressed ? 
                           BananaManiaColors.pressedButtonGradient : 
                           BananaManiaColors.buttonGradient)
@@ -83,6 +86,7 @@ struct JungleButtonStyle: ButtonStyle {
 struct WoodenPanelStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
+            .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 20)
                     .fill(BananaManiaColors.woodenBrown)

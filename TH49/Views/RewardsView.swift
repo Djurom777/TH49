@@ -29,40 +29,40 @@ struct RewardsView: View {
                     .opacity(monkey.opacity)
             }
             
-            VStack(spacing: 25) {
-                // Header
-                HStack {
-                    Button("← Home") {
-                        gameState.currentScreen = .home
-                    }
-                    .buttonStyle(JungleButtonStyle())
-                    
-                    Spacer()
-                    
-                    VStack {
-                        Text("🏆 Jungle Gallery 🏆")
-                            .font(.title.bold())
-                            .foregroundColor(BananaManiaColors.bananaYellow)
-                        Text("Unlock amazing treasures!")
-                            .font(.subheadline)
-                            .foregroundColor(BananaManiaColors.secondaryText)
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing) {
-                        HStack {
-                            Text("🪙")
-                            Text("\(gameState.totalCoins)")
-                                .font(.headline.bold())
-                                .foregroundColor(BananaManiaColors.goldenYellow)
+            ScrollView {
+                VStack(spacing: 25) {
+                    // Header
+                    HStack {
+                        Button("← Home") {
+                            gameState.currentScreen = .home
+                        }
+                        .buttonStyle(JungleButtonStyle())
+                        
+                        Spacer()
+                        
+                        VStack {
+                            Text("🏆 Jungle Gallery 🏆")
+                                .font(.title.bold())
+                                .foregroundColor(BananaManiaColors.bananaYellow)
+                            Text("Unlock amazing treasures!")
+                                .font(.subheadline)
+                                .foregroundColor(BananaManiaColors.secondaryText)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing) {
+                            HStack {
+                                Text("🪙")
+                                Text("\(gameState.totalCoins)")
+                                    .font(.headline.bold())
+                                    .foregroundColor(BananaManiaColors.goldenYellow)
+                            }
                         }
                     }
-                }
-                .padding(.horizontal, 20)
-                
-                // Rewards grid
-                ScrollView {
+                    .padding(.horizontal, 20)
+                    
+                    // Rewards grid
                     LazyVGrid(columns: [
                         GridItem(.flexible()),
                         GridItem(.flexible())
@@ -78,23 +78,24 @@ struct RewardsView: View {
                         }
                     }
                     .padding(.horizontal, 20)
-                }
-                
-                // Progress summary
-                VStack(spacing: 10) {
-                    Text("🌟 Collection Progress 🌟")
-                        .font(.title2.bold())
-                        .foregroundColor(BananaManiaColors.tropicalGreen)
                     
-                    Text("\(gameState.unlockedRewards.count) / \(GameState.availableRewards.count) rewards unlocked")
-                        .font(.headline)
-                        .foregroundColor(BananaManiaColors.secondaryText)
-                    
-                    ProgressView(value: Double(gameState.unlockedRewards.count) / Double(GameState.availableRewards.count))
-                        .progressViewStyle(JungleProgressStyle())
+                    // Progress summary
+                    VStack(spacing: 10) {
+                        Text("🌟 Collection Progress 🌟")
+                            .font(.title2.bold())
+                            .foregroundColor(BananaManiaColors.tropicalGreen)
+                        
+                        Text("\(gameState.unlockedRewards.count) / \(GameState.availableRewards.count) rewards unlocked")
+                            .font(.headline)
+                            .foregroundColor(BananaManiaColors.secondaryText)
+                        
+                        ProgressView(value: Double(gameState.unlockedRewards.count) / Double(GameState.availableRewards.count))
+                            .progressViewStyle(JungleProgressStyle())
+                    }
+                    .woodenPanel()
+                    .padding(.bottom, 20)
                 }
-                .woodenPanel()
-                .padding(.horizontal, 30)
+                .padding(.horizontal, 16)
                 .padding(.bottom, 20)
             }
         }

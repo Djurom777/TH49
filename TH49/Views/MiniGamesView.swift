@@ -48,55 +48,57 @@ struct MiniGamesView: View {
                     selectedGame = nil
                 })
             } else {
-                VStack(spacing: 30) {
-                    // Header
-                    HStack {
-                        Button(action: {
-                            gameState.currentScreen = .home
-                        }) {
-                            HStack {
-                                Text("🏠")
-                                Text("Home")
-                                    .font(.headline)
-                                    .foregroundColor(BananaManiaColors.mainText)
+                ScrollView {
+                    VStack(spacing: 30) {
+                        // Header
+                        HStack {
+                            Button(action: {
+                                gameState.currentScreen = .home
+                            }) {
+                                HStack {
+                                    Text("🏠")
+                                    Text("Home")
+                                        .font(.headline)
+                                        .foregroundColor(BananaManiaColors.mainText)
+                                }
+                            }
+                            .buttonStyle(JungleButtonStyle())
+                            
+                            Spacer()
+                            
+                            VStack {
+                                Text("🎮 Mini-Games 🎮")
+                                    .font(.title.bold())
+                                    .foregroundColor(BananaManiaColors.bananaYellow)
+                            }
+                            
+                            Spacer()
+                            
+                            // Balance display
+                            VStack(alignment: .trailing, spacing: 2) {
+                                HStack {
+                                    Text("🪙")
+                                    Text("\(gameState.totalCoins)")
+                                        .font(.headline.bold())
+                                        .foregroundColor(BananaManiaColors.goldenYellow)
+                                }
                             }
                         }
-                        .buttonStyle(JungleButtonStyle())
-                        
-                        Spacer()
-                        
-                        VStack {
-                            Text("🎮 Mini-Games 🎮")
-                                .font(.title.bold())
-                                .foregroundColor(BananaManiaColors.bananaYellow)
-                        }
-                        
-                        Spacer()
-                        
-                        // Balance display
-                        VStack(alignment: .trailing, spacing: 2) {
-                            HStack {
-                                Text("🪙")
-                                Text("\(gameState.totalCoins)")
-                                    .font(.headline.bold())
-                                    .foregroundColor(BananaManiaColors.goldenYellow)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
                     
-                    // Games grid
-                    LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
-                        ForEach(miniGames) { game in
-                            GameCard(game: game, gameState: gameState) {
-                                selectedGame = game
+                        // Games grid
+                        LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
+                            ForEach(miniGames) { game in
+                                GameCard(game: game, gameState: gameState) {
+                                    selectedGame = game
+                                }
                             }
                         }
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    Spacer()
+                        .padding(.horizontal, 20)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
                 }
             }
         }

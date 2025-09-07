@@ -33,98 +33,98 @@ struct CoinBankView: View {
                     .scaleEffect(coin.scale)
             }
             
-            VStack(spacing: 30) {
-                // Header
-                HStack {
-                    Button("← Home") {
-                        gameState.currentScreen = .home
-                    }
-                    .buttonStyle(JungleButtonStyle())
-                    
-                    Spacer()
-                    
-                    Text("🏦 Banana Bank 🏦")
-                        .font(.title.bold())
-                        .foregroundColor(BananaManiaColors.bananaYellow)
-                    
-                    Spacer()
-                    
-                    Button("💰 Deposit") {
-                        depositCoins()
-                    }
-                    .buttonStyle(JungleButtonStyle())
-                }
-                .padding(.horizontal, 20)
-                
-                // Main treasure chest
-                VStack(spacing: 20) {
-                    Text("📦")
-                        .font(.system(size: 120))
-                        .scaleEffect(chestScale)
-                        .onTapGesture {
-                            animateChest()
+            ScrollView {
+                VStack(spacing: 30) {
+                    // Header
+                    HStack {
+                        Button("← Home") {
+                            gameState.currentScreen = .home
                         }
-                    
-                    Text("Your Treasure Chest")
-                        .font(.title2.bold())
-                        .foregroundColor(BananaManiaColors.goldenYellow)
-                }
-                
-                // Balance display
-                VStack(spacing: 15) {
-                    HStack(spacing: 30) {
-                        BalanceItem(icon: "🪙", label: "Coins", amount: gameState.totalCoins, color: BananaManiaColors.goldenYellow)
-                        BalanceItem(icon: "🍌", label: "Bananas", amount: gameState.totalBananas, color: BananaManiaColors.bananaYellow)
-                    }
-                    
-                    // Goal progress
-                    VStack(spacing: 10) {
-                        HStack {
-                            Text("Next Goal: \(nextGoal) coins")
-                                .font(.headline)
-                                .foregroundColor(BananaManiaColors.secondaryText)
-                            
-                            Spacer()
-                            
-                            Text("\(Int(progressToNextGoal * 100))%")
-                                .font(.headline.bold())
-                                .foregroundColor(BananaManiaColors.tropicalGreen)
+                        .buttonStyle(JungleButtonStyle())
+                        
+                        Spacer()
+                        
+                        Text("🏦 Banana Bank 🏦")
+                            .font(.title.bold())
+                            .foregroundColor(BananaManiaColors.bananaYellow)
+                        
+                        Spacer()
+                        
+                        Button("💰 Deposit") {
+                            depositCoins()
                         }
-                        
-                        ProgressView(value: min(progressToNextGoal, 1.0))
-                            .progressViewStyle(JungleProgressStyle())
-                        
-                        if progressToNextGoal >= 1.0 {
-                            Button("🎉 Claim Goal Reward! 🎉") {
-                                claimGoalReward()
+                        .buttonStyle(JungleButtonStyle())
+                    }
+                    .padding(.horizontal, 20)
+                
+                    // Main treasure chest
+                    VStack(spacing: 20) {
+                        Text("📦")
+                            .font(.system(size: 120))
+                            .scaleEffect(chestScale)
+                            .onTapGesture {
+                                animateChest()
                             }
-                            .buttonStyle(JungleButtonStyle())
+                        
+                        Text("Your Treasure Chest")
+                            .font(.title2.bold())
+                            .foregroundColor(BananaManiaColors.goldenYellow)
+                    }
+                
+                    // Balance display
+                    VStack(spacing: 15) {
+                        HStack(spacing: 30) {
+                            BalanceItem(icon: "🪙", label: "Coins", amount: gameState.totalCoins, color: BananaManiaColors.goldenYellow)
+                            BalanceItem(icon: "🍌", label: "Bananas", amount: gameState.totalBananas, color: BananaManiaColors.bananaYellow)
+                        }
+                        
+                        // Goal progress
+                        VStack(spacing: 10) {
+                            HStack {
+                                Text("Next Goal: \(nextGoal) coins")
+                                    .font(.headline)
+                                    .foregroundColor(BananaManiaColors.secondaryText)
+                                
+                                Spacer()
+                                
+                                Text("\(Int(progressToNextGoal * 100))%")
+                                    .font(.headline.bold())
+                                    .foregroundColor(BananaManiaColors.tropicalGreen)
+                            }
+                            
+                            ProgressView(value: min(progressToNextGoal, 1.0))
+                                .progressViewStyle(JungleProgressStyle())
+                            
+                            if progressToNextGoal >= 1.0 {
+                                Button("🎉 Claim Goal Reward! 🎉") {
+                                    claimGoalReward()
+                                }
+                                .buttonStyle(JungleButtonStyle())
+                            }
                         }
                     }
-                }
-                .woodenPanel()
-                .padding(.horizontal, 20)
+                    .woodenPanel()
                 
-                // Savings stats
-                VStack(spacing: 15) {
-                    Text("💰 Savings Stats 💰")
-                        .font(.title2.bold())
-                        .foregroundColor(BananaManiaColors.bananaYellow)
-                    
-                    HStack(spacing: 30) {
-                        StatItem(label: "Daily Streak", value: "\(gameState.dailyBonusStreak)", icon: "🔥")
-                        StatItem(label: "Total Earned", value: "\(gameState.totalCoins + gameState.totalBananas * 5)", icon: "📈")
+                    // Savings stats
+                    VStack(spacing: 15) {
+                        Text("💰 Savings Stats 💰")
+                            .font(.title2.bold())
+                            .foregroundColor(BananaManiaColors.bananaYellow)
+                        
+                        HStack(spacing: 30) {
+                            StatItem(label: "Daily Streak", value: "\(gameState.dailyBonusStreak)", icon: "🔥")
+                            StatItem(label: "Total Earned", value: "\(gameState.totalCoins + gameState.totalBananas * 5)", icon: "📈")
+                        }
+                        
+                        HStack(spacing: 30) {
+                            StatItem(label: "Games Played", value: "\(gameState.gameScores.count)", icon: "🎮")
+                            StatItem(label: "Rewards Unlocked", value: "\(gameState.unlockedRewards.count)", icon: "🏆")
+                        }
                     }
-                    
-                    HStack(spacing: 30) {
-                        StatItem(label: "Games Played", value: "\(gameState.gameScores.count)", icon: "🎮")
-                        StatItem(label: "Rewards Unlocked", value: "\(gameState.unlockedRewards.count)", icon: "🏆")
-                    }
+                    .woodenPanel()
                 }
-                .woodenPanel()
-                .padding(.horizontal, 20)
-                
-                Spacer()
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
             }
         }
         .onAppear {

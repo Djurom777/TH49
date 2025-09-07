@@ -83,10 +83,6 @@ struct SettingsView: View {
                                 .font(.title2.bold())
                                 .foregroundColor(BananaManiaColors.bananaYellow)
                             
-                            Text("Version 1.0.0")
-                                .font(.subheadline)
-                                .foregroundColor(BananaManiaColors.secondaryText)
-                            
                             Text("Made with 🍌 and ❤️")
                                 .font(.caption)
                                 .foregroundColor(BananaManiaColors.secondaryText)
